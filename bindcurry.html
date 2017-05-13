@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bindcurry</title>
+    <script src="js/EventUtil.js"></script>
+</head>
+<body>
+    <input value="click me" id="btn" type="button">
+    <script>
+        function bind(fn,context){
+            var args = Array.prototype.slice.call(arguments, 2);
+            return function () {
+                var innerArgs = Array.prototype.slice.call(arguments),
+                        finalArgs=args.concat(innerArgs);
+                return fn.apply(context, finalArgs);
+            }
+        }
+        var handler={
+            message:"事件绑定添加传参",
+            handlerClick:function (name,event) {
+                alert(this.message + ":" + name + ":" + event.type);
+            }
+        }
+        var btn = document.getElementById("btn");
+        EventUtil.addHandler(btn, "click", bind(handler.handlerClick, handler, "btn"));
+    </script>
+</body>
+</html>
