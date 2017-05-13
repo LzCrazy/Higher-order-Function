@@ -7,10 +7,14 @@
 <body>
     <script>
         function curry(fn) {
+            console.log(fn);
             var args = Array.prototype.slice.call(arguments, 1);
             return function () {
                 var innerArgs = Array.prototype.slice.call(arguments);
+                //array[3]
+
                 var finalArgs = args.concat(innerArgs);
+                //(5,3)
                 return fn.apply(null, finalArgs);
             }
         }
