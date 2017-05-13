@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bind</title>
+    <script src="js/EventUtil.js"></script>
+</head>
+<body>
+    <p>ES5中的bind方法 <code>Function.prototype.bind()</code></p>
+    <input type="button" id="btn" value="bind">
+    <script>
+        var handler={
+            message:"事件处理程序类型",
+            handlerClick:function (event) {
+                alert(this.message + ":" + event.type);
+            }
+        };
+        var btn = document.getElementById("btn");
+        EventUtil.addHandler(btn, "click", handler.handlerClick.bind(handler));
+    </script>
+</body>
+</html>
