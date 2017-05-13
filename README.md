@@ -183,7 +183,7 @@ Polygon构造函数是作用域安全的，但是Rectangle构造不是。新创�
 ```
 创建一个匿名，自调的函数，用于确定应该使用那一个函数实行
  
-####  4.函数函数
+####  4.函数绑定
 需要创建一个函数，可以在特定的this环境中指定参数调用另一个函数。该技巧常常和回调函数与事件处理程序一起使用，以便将函数作为
 变量传递的同时保留代码执行环境。
 ```
@@ -232,3 +232,51 @@ Polygon构造函数是作用域安全的，但是Rectangle构造不是。新创�
     EventUtil.addHandler(btn,"click",bind(handler.handlerClick,handler));
     });
 ```
+
+#### 5.函数柯里化
+与函数绑定紧密相关的要点是函数柯里化（fiction currying）,它用于创建已经设置好了一个或多个参数的函数。函数柯里化
+的基本方法和函数绑定是一样的：使用一个闭包返回一个函数。两者的区别在于，当函数被调用时，返回的函数还需要设置一些传入的参数
+```
+    function add(num1,num2){
+        return num1 + num2;
+    }
+    function curriedAdd(num2){
+        return add(5,num2);
+    }
+    alert(add(2,3));
+    alert(curriedAdd(3));
+```
+虽然curriedAdd（）不是柯里化函数，但体现在柯里化的概念。
+
+柯里化函数动态创建的步骤：调用另一个函数并为它传入要柯里化的函数和必要参数
+```
+    function curry(fn){
+        var args=Array.prototype.slice.call(arguments,1);
+        return function(){
+            var innerArgs=Array.prototype.slice.call(arguments);
+            var finalArgs=args.concat(innerArgs);
+            return fn.apply(null,finalArgs);
+        }
+    }
+```
+该函数的主要工作是参数的排序，fn作为要进行柯里化的函数。为了获取第一个参数之后的参数，在argument对象调用了slice方法，并传入
+参数1表示被返回的数组包含从第二个参数开始的所有参数。然后args数组包含了来自外部函数的参数。在内部函数中，创建了innerArgs数组用来
+存在所有传入的参数（又一次用到slice）。有了存放来自外部函数和内部函数的参数数组后，就可以使用concat()方法将她们组合为finalArgs，然后
+使用apply将结果传递给该函数。
+注意：这个函数并没有考虑到执行环境，所以调用apply时第一个参数是null
+
+函数柯里化作为函数绑定的一部分使用，构造出复杂的bind函数
+```
+    function bind(fn,context){
+        var args=Array.prototype.slice.call(arguments,2);
+        return function(){
+            var innerArgs  = Array.prototype.slice.call(arguments);
+            var finalArgs=args.concat(innerArgs);
+            return fn.apply(context,finalArgs);
+        }
+    }
+```
+对curry函数主要更改在于传入的参数，以及它如果影响代码的结果。curry仅仅接收一个要包裹的函数作为参数，而bind()同时接受
+函数和一个Object对象。这表示给被绑定的函数的参数是从第三个开始而不是第二个，这就要更改slice的第一处调用。另一处更改是
+在倒数第三行将object对象传给apply。当使用bind()时，它会返回到给定环境的函数，并且可能它其中某些函数参数已经被设定好。
+当你向除了event对象再额外给事件处理程序传递参数时，是非常有用
